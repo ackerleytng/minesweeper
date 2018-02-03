@@ -1,0 +1,71 @@
+* Introduction
+
+Minesweeper program written for practice.
+
+* How data is stored
+
+Information is going to be rather sparse, so the state of the game is stored in a keyed map.
+
+** `size`
+   
+The is the size of the minesweeper board. Since we're using only square boards, 
+we only need to store a length of the board.
+
+** `mines`
+
+For ease of lookup, `mines` is a nested map of `{row index {col index true}}`. 
+When performing the lookup with `get-in`, the absence of the `true` value will cause 
+get-in to return `nil`, conveniently falsey in clojure.
+
+** `data`
+
+`data` is also a nested map for ease of lookup, and will take the following values
+
+ - no entry in map if no guess has been made
+ - a number if a guess has already been made, and there is the number of mines nearby
+
+** `flags`
+
+`flags` is a nested map and will be
+
+ - true if the position was flagged
+ - nil if position was unflagged
+
+There will be no entry in this map if the position was never flagged or unflagged.
+
+** Remaining
+
+This is the number of positions that still have no flag and no number on them
+
+** Other data structures
+
+*** Position
+
+A position is a length 2 vector, such as `[1 1]`. 
+Both indices in a valid position must be more than 0 and smaller than `size`
+
+*** Move
+
+A move is a vector, `[boolean position]`.
+The boolean is `true` if the user wanted to toggle a flag and
+`false` if the user just wanted to 'step' on a position or trigger it.
+
+* Unveiling
+
+When a position is submitted as a guess, 
+ - And the selected position is a mine, all mines and existing data will be displayed; 
+   the game ends
+ - If there are no mines nearby, all adjacent squares will be unveiled, recursively, 
+   until some adjacent position hides a mine (a number is unveiled)
+
+If auto unveiling hits a flagged location, we won't unveil it.
+This penalizes the player for guessing unnecessarily.
+
+* Overall logic
+
+Player can either flag, unflag or trigger positions one at a time.
+
+| action  | toggle flag        | trigger                                                              |
+| mined   | mark flag on board | lose, reveal mines on unmarked positions, show wrongly flagged mines |
+| no-mine | mark flag on board | unveil, recursively                                                  |
+| flagged | remove flag        | nothing happens                                                      |
