@@ -134,7 +134,7 @@
   [size]
   ;; Number of mines is capped at (x-1)(y-1)
   ;; According to http://www.minesweeper.info/custom.php
-  (let [max-mines (int (* 0.5 (dec size) (dec size)))
+  (let [max-mines (int (* 0.2 (dec size) (dec size)))
         rows (take max-mines (repeatedly #(int (rand size))))
         cols (take max-mines (repeatedly #(int (rand size))))]
     (reduce #(assoc-in %1 %2 true)
@@ -238,4 +238,8 @@
 
 (defn -main
   [& args]
+  (println "Enter 'q' anytime to quit!")
+  (println "How to enter a move:")
+  (println "  1. 'f 0 0' to toggle flag at row 0 and col 0")
+  (println "  2. '1 2' to unveil row 1 col 2")
   (prompt-size))
